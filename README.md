@@ -1,14 +1,18 @@
 # 🔥 Burn Tokens
 
-A modern Python web application for managing token burning operations. Built with Flask and designed with a clean, responsive interface.
+**Note: The name "burn-tokens" is a joke about AI coding this project - referring to the LLM tokens consumed during development, not cryptocurrency tokens!**
+
+A demo Python web application built with Flask. This is a placeholder/demonstration project while the actual functionality is still being decided. The current "token burning" interface is just for demonstration purposes and has no relation to cryptocurrency or blockchain operations.
 
 ![Burn Tokens Interface](https://github.com/user-attachments/assets/67fd4007-2e61-452a-89f8-6f1cee1edbf6)
 
 ## Features
 
-- **Web Interface**: Beautiful, responsive UI for token burning operations
-- **REST API**: Full RESTful API for programmatic access
-- **Statistics Dashboard**: Real-time burn statistics and history
+**This is a demo application with placeholder functionality:**
+
+- **Web Interface**: Beautiful, responsive UI for demonstration purposes
+- **REST API**: Full RESTful API for testing and development
+- **Statistics Dashboard**: Demo statistics and history tracking
 - **Comprehensive Testing**: Full test suite with pytest
 - **Code Quality**: Linting with flake8 and formatting with black
 - **Docker Support**: Ready for containerized deployment
@@ -87,7 +91,7 @@ Returns the health status of the application.
 ```http
 POST /api/burn
 ```
-Burns tokens and records the transaction.
+**Demo endpoint** - simulates burning tokens and records the transaction.
 
 **Request Body:**
 ```json
@@ -112,7 +116,7 @@ Burns tokens and records the transaction.
 ```http
 GET /api/burns?page=1&limit=10
 ```
-Retrieves a paginated list of burn operations.
+Retrieves a paginated list of **demo** burn operations.
 
 **Response:**
 ```json
@@ -138,13 +142,13 @@ Retrieves a paginated list of burn operations.
 ```http
 GET /api/burns/{burn_id}
 ```
-Retrieves a specific burn operation by ID.
+Retrieves a specific **demo** burn operation by ID.
 
 #### Get Statistics
 ```http
 GET /api/stats
 ```
-Returns burn statistics.
+Returns **demo** burn statistics.
 
 **Response:**
 ```json
@@ -198,8 +202,10 @@ burn-tokens/
 
 ### Future Enhancements
 
+**Note: The actual functionality of this project is still being decided. Current "token burning" features are placeholders.**
+
 - Database integration (PostgreSQL/SQLite)
-- Blockchain integration for real token burning
+- ~~Blockchain integration for real token burning~~ (Not crypto-related!)
 - User authentication and authorization
 - Advanced analytics and reporting
 - API rate limiting

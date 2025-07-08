@@ -1,7 +1,12 @@
 """
-Burn Tokens Web Application
+Burn Tokens Demo Web Application
 
-A Flask-based web application for managing token burning operations.
+A Flask-based demo web application. The name "burn-tokens" refers to LLM tokens
+consumed during AI-assisted development, not cryptocurrency tokens!
+
+This is a placeholder/demonstration application while actual functionality is
+being decided. Current "token burning" features are for demo purposes only and
+have no relation to cryptocurrency.
 """
 
 import os
@@ -29,7 +34,7 @@ burn_stats = {"total_burned": 0, "burn_count": 0, "last_burn": None}
 
 @app.route("/")
 def index():
-    """Main page showing burn statistics and interface."""
+    """Main page showing demo burn statistics and interface."""
     return render_template("index.html", stats=burn_stats)
 
 
@@ -47,7 +52,7 @@ def health_check():
 
 @app.route("/api/burn", methods=["POST"])
 def burn_tokens():
-    """Burn tokens endpoint."""
+    """Demo burn tokens endpoint - simulates token burning for demonstration."""
     try:
         data = request.get_json()
 
@@ -100,7 +105,7 @@ def burn_tokens():
 
 @app.route("/api/burns")
 def get_burns():
-    """Get list of all token burns."""
+    """Get list of all demo token burns."""
     page = request.args.get("page", 1, type=int)
     limit = request.args.get("limit", 10, type=int)
 
@@ -123,7 +128,7 @@ def get_burns():
 
 @app.route("/api/burns/<int:burn_id>")
 def get_burn(burn_id):
-    """Get specific burn record by ID."""
+    """Get specific demo burn record by ID."""
     burn = next((b for b in burned_tokens if b["id"] == burn_id), None)
 
     if not burn:
@@ -134,7 +139,7 @@ def get_burn(burn_id):
 
 @app.route("/api/stats")
 def get_stats():
-    """Get burn statistics."""
+    """Get demo burn statistics."""
     return jsonify(burn_stats)
 
 
