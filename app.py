@@ -71,7 +71,7 @@ def burn_tokens():
             "amount": float(amount),
             "reason": reason,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "tx_hash": f"0x{''.join(['%02x' % (i % 256) for i in range(32)])}"
+            "tx_hash": f"0x{''.join(['%02x' % (i % 256) for i in range(32)])}",
         }
 
         # Store the burn record
