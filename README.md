@@ -22,7 +22,7 @@ A demo Python web application built with Flask. This is a placeholder/demonstrat
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.13+
 - pip
 - Docker (optional)
 
