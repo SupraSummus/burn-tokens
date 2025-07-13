@@ -15,7 +15,7 @@ A demo Python web application built with Flask. This is a placeholder/demonstrat
 - **Statistics Dashboard**: Demo statistics and history tracking
 - **Comprehensive Testing**: Full test suite with pytest
 - **Code Quality**: Linting with flake8 and formatting with black
-- **Docker Support**: Ready for containerized deployment
+
 - **Documentation**: Comprehensive API documentation
 
 ## Quick Start
@@ -24,7 +24,6 @@ A demo Python web application built with Flask. This is a placeholder/demonstrat
 
 - Python 3.13+
 - pip
-- Docker (optional)
 
 ### Installation
 
@@ -51,17 +50,6 @@ python app.py
 ```
 
 The application will be available at `http://localhost:5000`
-
-### Docker Deployment
-
-```bash
-# Build and run with Docker Compose
-docker-compose up --build
-
-# Or build and run manually
-docker build -t burn-tokens .
-docker run -p 5000:5000 burn-tokens
-```
 
 ## API Documentation
 
@@ -182,8 +170,6 @@ burn-tokens/
 ├── conftest.py           # Test configuration
 ├── requirements.txt      # Python dependencies
 ├── .env.example         # Environment variables template
-├── Dockerfile           # Docker configuration
-├── docker-compose.yml   # Docker Compose setup
 ├── setup.cfg            # Tool configuration
 ├── .gitignore          # Git ignore rules
 ├── templates/
