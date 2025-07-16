@@ -192,30 +192,6 @@ poetry shell
 pytest tests/ -v
 ```
 
-### Using Make Commands
-
-The project includes a Makefile for common tasks:
-
-```bash
-# Install dependencies
-make install
-
-# Run tests
-make test
-
-# Run linting
-make lint
-
-# Format code
-make format
-
-# Run application
-make run
-
-# Run all CI checks
-make ci
-```
-
 ### Legacy Development (pip)
 
 If you prefer using pip directly:
@@ -232,24 +208,6 @@ flake8 app.py tests/ conftest.py
 
 # Code formatting
 black app.py tests/ conftest.py
-```
-
-### Project Structure
-```
-burn-tokens/
-├── app.py                 # Main Flask application
-├── conftest.py           # Test configuration
-├── pyproject.toml        # Poetry configuration & dependencies
-├── poetry.lock           # Locked dependency versions
-├── requirements.txt      # Python dependencies (legacy)
-├── .env.example         # Environment variables template
-├── setup.cfg            # Tool configuration (migrated to pyproject.toml)
-├── Makefile             # Development commands
-├── .gitignore          # Git ignore rules
-├── templates/
-│   └── index.html      # Web interface template
-└── tests/
-    └── test_app.py     # Application tests
 ```
 
 ## Configuration
