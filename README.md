@@ -22,8 +22,8 @@ A demo Python web application built with Flask. This is a placeholder/demonstrat
 
 ### Prerequisites
 
-- Python 3.13+
-- pip
+- Python 3.12+
+- Poetry (for dependency management)
 
 ### Installation
 
@@ -33,23 +33,41 @@ git clone https://github.com/SupraSummus/burn-tokens.git
 cd burn-tokens
 ```
 
-2. Install dependencies:
+2. Install Poetry (if not already installed):
 ```bash
-pip install -r requirements.txt
+curl -sSL https://install.python-poetry.org | python3 -
+# or using pip
+pip install poetry
 ```
 
-3. Set up environment variables:
+3. Install dependencies:
+```bash
+poetry install
+```
+
+4. Set up environment variables:
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
 ```
 
-4. Run the application:
+5. Run the application:
 ```bash
+poetry run python app.py
+# or activate the virtual environment
+poetry shell
 python app.py
 ```
 
 The application will be available at `http://localhost:5000`
+
+### Alternative Installation (Legacy)
+
+If you prefer using pip and requirements.txt:
+```bash
+pip install -r requirements.txt
+python app.py
+```
 
 ## API Documentation
 
@@ -149,33 +167,47 @@ Returns **demo** burn statistics.
 
 ## Development
 
-### Running Tests
+### Using Poetry (Recommended)
+
+The project now uses Poetry for dependency management. Use these commands:
+
 ```bash
+# Install dependencies
+poetry install
+
+# Run tests
+poetry run pytest tests/ -v
+
+# Code linting
+poetry run flake8 app.py tests/ conftest.py
+
+# Code formatting
+poetry run black app.py tests/ conftest.py
+
+# Run the application
+poetry run python app.py
+
+# Activate Poetry shell (alternative)
+poetry shell
 pytest tests/ -v
 ```
 
-### Code Quality
+### Legacy Development (pip)
+
+If you prefer using pip directly:
+
 ```bash
-# Linting
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests
+pytest tests/ -v
+
+# Code linting
 flake8 app.py tests/ conftest.py
 
 # Code formatting
 black app.py tests/ conftest.py
-```
-
-### Project Structure
-```
-burn-tokens/
-├── app.py                 # Main Flask application
-├── conftest.py           # Test configuration
-├── requirements.txt      # Python dependencies
-├── .env.example         # Environment variables template
-├── setup.cfg            # Tool configuration
-├── .gitignore          # Git ignore rules
-├── templates/
-│   └── index.html      # Web interface template
-└── tests/
-    └── test_app.py     # Application tests
 ```
 
 ## Configuration
