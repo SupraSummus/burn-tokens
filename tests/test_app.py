@@ -3,16 +3,20 @@ Tests for the burn tokens web application.
 """
 
 import json
-from app import burned_tokens, burn_stats
+import pytest
+from models import db, BurnRecord
 
 
 class TestBurnTokensApp:
     """Test suite for the burn tokens application."""
 
-    def setup_method(self):
-        """Reset state before each test."""
-        burned_tokens.clear()
-        burn_stats.update({"total_burned": 0, "burn_count": 0, "last_burn": None})
+    @pytest.fixture(autouse=True)
+    def setup_method(self, client):
+        """Reset database state before each test."""
+        # Clear all burn records from the database
+        with client.application.app_context():
+            db.session.query(BurnRecord).delete()
+            db.session.commit()
 
     def test_health_check(self, client):
         """Test the health check endpoint."""
@@ -46,10 +50,14 @@ class TestBurnTokensApp:
         assert "tx_hash" in data
         assert "Successfully burned" in data["message"]
 
-        # Check that burn was recorded
-        assert len(burned_tokens) == 1
-        assert burned_tokens[0]["amount"] == sample_burn_data["amount"]
-        assert burned_tokens[0]["token_address"] == sample_burn_data["token_address"]
+        # Check that burn was recorded in database
+        with client.application.app_context():
+            burn_count = db.session.query(BurnRecord).count()
+            assert burn_count == 1
+
+            burn_record = db.session.query(BurnRecord).first()
+            assert burn_record.amount == sample_burn_data["amount"]
+            assert burn_record.token_address == sample_burn_data["token_address"]
 
     def test_burn_tokens_missing_data(self, client):
         """Test burn endpoint with missing data."""
