@@ -1,16 +1,16 @@
-"""Test to verify that requirements.txt contains secure package versions."""
+"""Test to verify that pyproject.toml contains secure package versions."""
 
 import re
 
 
-def test_requirements_have_secure_versions():
-    """Test that requirements.txt specifies secure versions of packages."""
-    with open("requirements.txt", "r") as f:
-        requirements = f.read()
+def test_pyproject_has_secure_versions():
+    """Test that pyproject.toml specifies secure versions of packages."""
+    with open("pyproject.toml", "r") as f:
+        pyproject_content = f.read()
 
     # Check Flask-CORS version (should be 4.0.2+ to fix vulnerabilities)
-    flask_cors_match = re.search(r"Flask-CORS==(\d+\.\d+\.\d+)", requirements)
-    assert flask_cors_match, "Flask-CORS version not found in requirements.txt"
+    flask_cors_match = re.search(r'Flask-CORS = "(\d+\.\d+\.\d+)"', pyproject_content)
+    assert flask_cors_match, "Flask-CORS version not found in pyproject.toml"
     flask_cors_version = flask_cors_match.group(1)
 
     # Parse version numbers for comparison
@@ -22,8 +22,8 @@ def test_requirements_have_secure_versions():
         f"Flask-CORS version {flask_cors_version} vulnerable, need 4.0.2+"
 
     # Check requests version (should be 2.32.0+ to fix GHSA-9wx4-h78v-vm56)
-    requests_match = re.search(r"requests==(\d+\.\d+\.\d+)", requirements)
-    assert requests_match, "requests version not found in requirements.txt"
+    requests_match = re.search(r'requests = "(\d+\.\d+\.\d+)"', pyproject_content)
+    assert requests_match, "requests version not found in pyproject.toml"
     requests_version = requests_match.group(1)
 
     # requests should be at least 2.32.0
@@ -31,8 +31,8 @@ def test_requirements_have_secure_versions():
         f"requests version {requests_version} vulnerable, need 2.32.0+"
 
     # Check black version (should be 24.3.0+ to fix PYSEC-2024-48)
-    black_match = re.search(r"black==(\d+\.\d+\.\d+)", requirements)
-    assert black_match, "black version not found in requirements.txt"
+    black_match = re.search(r'black = "(\d+\.\d+\.\d+)"', pyproject_content)
+    assert black_match, "black version not found in pyproject.toml"
     black_version = black_match.group(1)
 
     # black should be at least 24.3.0
@@ -41,18 +41,18 @@ def test_requirements_have_secure_versions():
 
 
 def test_no_vulnerable_versions():
-    """Test that requirements.txt does not contain vulnerable versions."""
-    with open("requirements.txt", "r") as f:
-        requirements = f.read()
+    """Test that pyproject.toml does not contain vulnerable versions."""
+    with open("pyproject.toml", "r") as f:
+        pyproject_content = f.read()
 
     # Known vulnerable versions that should not be present
     vulnerable_patterns = [
-        r"Flask-CORS==4\.0\.0",  # Vulnerable to PYSEC-2024-71, etc.
-        r"Flask-CORS==4\.0\.1",  # Still vulnerable to some issues
-        r"requests==2\.31\.0",   # Vulnerable to GHSA-9wx4-h78v-vm56
-        r"black==23\.11\.0",     # Vulnerable to PYSEC-2024-48
+        r'Flask-CORS = "4\.0\.0"',  # Vulnerable to PYSEC-2024-71, etc.
+        r'Flask-CORS = "4\.0\.1"',  # Still vulnerable to some issues
+        r'requests = "2\.31\.0"',   # Vulnerable to GHSA-9wx4-h78v-vm56
+        r'black = "23\.11\.0"',     # Vulnerable to PYSEC-2024-48
     ]
 
     for pattern in vulnerable_patterns:
-        assert not re.search(pattern, requirements), \
+        assert not re.search(pattern, pyproject_content), \
             f"Vulnerable version found matching pattern: {pattern}"
