@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from dotenv import load_dotenv
+from sqlalchemy import func
+from models import db, BurnRecord
 
 # Load environment variables
 load_dotenv()
@@ -27,15 +29,40 @@ app.config["SECRET_KEY"] = os.getenv(
     "SECRET_KEY", "dev-secret-key-change-in-production"
 )
 
-# In-memory storage for demo purposes (use database in production)
-burned_tokens = []
-burn_stats = {"total_burned": 0, "burn_count": 0, "last_burn": None}
+# Database configuration
+database_url = os.getenv("DATABASE_URL", "sqlite:///burn_tokens.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Initialize database
+db.init_app(app)
+
+# Create tables
+with app.app_context():
+    db.create_all()
+
+
+def get_burn_stats():
+    """Calculate burn statistics from database."""
+    total_burned = db.session.query(func.sum(BurnRecord.amount)).scalar() or 0
+    burn_count = db.session.query(func.count(BurnRecord.id)).scalar() or 0
+    last_burn_record = db.session.query(BurnRecord).order_by(
+        BurnRecord.timestamp.desc()
+    ).first()
+    last_burn = last_burn_record.timestamp.isoformat() if last_burn_record else None
+
+    return {
+        "total_burned": float(total_burned),
+        "burn_count": burn_count,
+        "last_burn": last_burn
+    }
 
 
 @app.route("/")
 def index():
     """Main page showing demo burn statistics and interface."""
-    return render_template("index.html", stats=burn_stats)
+    stats = get_burn_stats()
+    return render_template("index.html", stats=stats)
 
 
 @app.route("/api/health")
@@ -69,30 +96,27 @@ def burn_tokens():
         if not amount or amount <= 0:
             return jsonify({"error": "Valid amount is required"}), 400
 
+        # Generate demo transaction hash
+        tx_hash = f"0x{''.join(['%02x' % (i % 256) for i in range(32)])}"
+
         # Create burn record
-        burn_record = {
-            "id": len(burned_tokens) + 1,
-            "token_address": token_address,
-            "amount": float(amount),
-            "reason": reason,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "tx_hash": f"0x{''.join(['%02x' % (i % 256) for i in range(32)])}",
-        }
+        burn_record = BurnRecord(
+            token_address=token_address,
+            amount=float(amount),
+            reason=reason,
+            tx_hash=tx_hash
+        )
 
-        # Store the burn record
-        burned_tokens.append(burn_record)
-
-        # Update statistics
-        burn_stats["total_burned"] += burn_record["amount"]
-        burn_stats["burn_count"] += 1
-        burn_stats["last_burn"] = burn_record["timestamp"]
+        # Save to database
+        db.session.add(burn_record)
+        db.session.commit()
 
         return (
             jsonify(
                 {
                     "success": True,
-                    "burn_id": burn_record["id"],
-                    "tx_hash": burn_record["tx_hash"],
+                    "burn_id": burn_record.id,
+                    "tx_hash": burn_record.tx_hash,
                     "message": f"Successfully burned {amount} tokens",
                 }
             ),
@@ -100,6 +124,7 @@ def burn_tokens():
         )
 
     except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
 
@@ -109,19 +134,20 @@ def get_burns():
     page = request.args.get("page", 1, type=int)
     limit = request.args.get("limit", 10, type=int)
 
-    # Simple pagination
-    start = (page - 1) * limit
-    end = start + limit
+    # Query with pagination
+    pagination = db.session.query(BurnRecord).order_by(
+        BurnRecord.timestamp.desc()
+    ).paginate(page=page, per_page=limit, error_out=False)
 
-    paginated_burns = burned_tokens[start:end]
+    burns = [burn.to_dict() for burn in pagination.items]
 
     return jsonify(
         {
-            "burns": paginated_burns,
-            "total": len(burned_tokens),
+            "burns": burns,
+            "total": pagination.total,
             "page": page,
             "limit": limit,
-            "has_next": end < len(burned_tokens),
+            "has_next": pagination.has_next,
         }
     )
 
@@ -129,18 +155,18 @@ def get_burns():
 @app.route("/api/burns/<int:burn_id>")
 def get_burn(burn_id):
     """Get specific demo burn record by ID."""
-    burn = next((b for b in burned_tokens if b["id"] == burn_id), None)
+    burn = db.session.query(BurnRecord).filter_by(id=burn_id).first()
 
     if not burn:
         return jsonify({"error": "Burn record not found"}), 404
 
-    return jsonify(burn)
+    return jsonify(burn.to_dict())
 
 
 @app.route("/api/stats")
 def get_stats():
     """Get demo burn statistics."""
-    return jsonify(burn_stats)
+    return jsonify(get_burn_stats())
 
 
 @app.errorhandler(404)

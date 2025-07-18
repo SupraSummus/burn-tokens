@@ -12,6 +12,8 @@ A demo Python web application built with Flask. This is a placeholder/demonstrat
 
 - **Web Interface**: Beautiful, responsive UI for demonstration purposes
 - **REST API**: Full RESTful API for testing and development
+- **Database Persistence**: SQLAlchemy with PostgreSQL/SQLite support
+- **Database Migrations**: Alembic for schema management
 - **Statistics Dashboard**: Demo statistics and history tracking
 - **Comprehensive Testing**: Full test suite with pytest
 - **Code Quality**: Linting with flake8 and formatting with black
@@ -24,6 +26,7 @@ A demo Python web application built with Flask. This is a placeholder/demonstrat
 
 - Python 3.12+
 - Poetry
+- PostgreSQL (for production) or SQLite (for development/testing)
 
 ### Installation
 
@@ -32,6 +35,8 @@ git clone https://github.com/SupraSummus/burn-tokens.git
 cd burn-tokens
 poetry install
 cp .env.example .env
+# Edit .env to configure your database if needed
+poetry run alembic upgrade head  # Initialize database
 poetry run python app.py
 ```
 
@@ -135,30 +140,51 @@ GET /api/stats
 # Install dependencies
 poetry install
 
+# Initialize/upgrade database
+poetry run alembic upgrade head
+
 # Run tests
 poetry run pytest tests/ -v
 
 # Code linting
-poetry run flake8 app.py tests/ conftest.py
+poetry run flake8 app.py models.py tests/ conftest.py
 
 # Code formatting
-poetry run black app.py tests/ conftest.py
+poetry run black app.py models.py tests/ conftest.py
 
 # Run the application
 poetry run python app.py
+
+# Create new database migration (after model changes)
+poetry run alembic revision --autogenerate -m "Migration message"
 ```
 
 ## Configuration
 
+Environment variables:
+
 - `DEBUG`: Enable debug mode (default: false)
 - `SECRET_KEY`: Flask secret key for sessions
 - `PORT`: Application port (default: 5000)
+- `DATABASE_URL`: Database connection string (default: `sqlite:///burn_tokens.db`)
+
+### Database Configuration
+
+**Development (SQLite)**:
+```
+DATABASE_URL=sqlite:///burn_tokens.db
+```
+
+**Production (PostgreSQL)**:
+```
+DATABASE_URL=postgresql://username:password@localhost:5432/burn_tokens
+```
 
 ### Future Enhancements
 
 **Note: The actual functionality of this project is still being decided. Current "token burning" features are placeholders.**
 
-- Database integration (PostgreSQL/SQLite)
+- ~~Database integration (PostgreSQL/SQLite)~~ ✅ **COMPLETED**
 - ~~Blockchain integration for real token burning~~ (Not crypto-related!)
 - User authentication and authorization
 - Advanced analytics and reporting
